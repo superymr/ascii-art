@@ -1,0 +1,12 @@
+name: ascii-art
+channels:
+  - defaults
+dependencies:
+  - python=3.8
+  - flask
+  - numpy
+  - opencv
+  - pillow
+  - pip
+  - pip:
+    - flask-cors 

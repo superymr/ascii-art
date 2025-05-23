@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片转ASCII艺术</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABILAAASCwAAAAAAAAAAAAD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wA=">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .upload-section, .result-section {
+            flex: 1;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #imageInput {
+            margin-bottom: 10px;
+        }
+        #preview {
+            max-width: 100%;
+            margin-bottom: 10px;
+        }
+        #asciiArt {
+            font-family: 'Courier New', monospace;
+            white-space: pre;
+            font-size: 6px;
+            line-height: 6px;
+            background-color: #000;
+            color: #fff;
+            padding: 10px;
+            overflow: auto;
+            border-radius: 4px;
+            letter-spacing: 0;
+            font-weight: bold;
+        }
+        .controls {
+            margin-top: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result-section {
+            position: relative;
+        }
+        .ascii-container {
+            flex: 1;
+            overflow: auto;
+            min-height: 400px;
+        }
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+        .settings {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 4px;
+        }
+        .settings label {
+            display: block;
+            margin-bottom: 15px;
+        }
+        .settings input[type="range"] {
+            width: 200px;
+            margin-top: 5px;
+        }
+        .copy-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .copy-button:hover {
+            background-color: #45a049;
+        }
+        #status {
+            text-align: center;
+            padding: 10px;
+            color: #666;
+        }
+        .custom-file-input {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .custom-file-input:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div id="status">正在加载OpenCV.js...</div>
+    <div class="container">
+        <div class="upload-section">
+            <h2>上传图片</h2>
+            <input type="file" id="imageInput" accept="image/*" disabled>
+            <div class="settings">
+                <label>
+                    对比度:
+                    <br>
+                    <input type="range" id="contrast" min="0.5" max="2.5" step="0.1" value="1">
+                </label>
+                <label>
+                    亮度:
+                    <br>
+                    <input type="range" id="brightness" min="-50" max="50" step="1" value="0">
+                </label>
+                <label>
+                    字符宽度:
+                    <br>
+                    <input type="range" id="charWidth" min="36" max="200" step="1" value="150">
+                    <span id="charWidthValue">150</span>
+                </label>
+            </div>
+            <br>
+            <img id="preview" style="display: none;">
+        </div>
+        <div class="result-section">
+            <h2>识别结果</h2>
+            <button class="copy-button" id="copyButton">复制结果</button>
+            <div class="ascii-container">
+                <pre id="asciiArt"></pre>
+            </div>
+        </div>
+    </div>
+    <div id="loading">正在处理图像...</div>
+    <script>
+        // 在加载OpenCV.js之前定义回调函数
+        function onOpenCvReady() {
+            document.getElementById('status').style.display = 'none';
+            document.getElementById('imageInput').disabled = false;
+            window.cvReady = true;
+        }
+    </script>
+    <script async src="https://docs.opencv.org/master/opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
